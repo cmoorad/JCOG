@@ -15,6 +15,9 @@
         android:text="Clear"
         android:layout_gravity="right" />
 
+    <!--Test-->
+
+
     <TextView
         android:id="@+id/handle"
         android:layout_width="wrap_content"

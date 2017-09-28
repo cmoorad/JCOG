@@ -70,7 +70,8 @@
         android:inputType="textPersonName"
         android:text="*******"
         android:layout_gravity="center"
-        android:layout_marginBottom="10dp" />
+        android:layout_marginBottom="10dp"
+        android:nextFocusDown="changeFocus"/>
 
     <TextView
         android:id="@+id/picture"
@@ -82,10 +83,12 @@
         android:layout_marginBottom="10dp" />
 
    <ImageButton
+       android:id="@+id/image_view"
        android:layout_width="200dp"
        android:layout_height="200dp"
        android:layout_gravity="center_horizontal"
-       android:layout_marginBottom="15dp" />
+       android:layout_marginBottom="15dp"
+       android:onClick="camButtonClicked" />
 
     <Button
         android:id="@+id/save"

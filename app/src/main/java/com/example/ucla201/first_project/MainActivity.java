@@ -4,6 +4,19 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
+import android.content.DialogInterface;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.TextView;
+
+
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.hardware.Camera;
@@ -24,16 +37,20 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import static android.provider.AlarmClock.EXTRA_MESSAGE;
+
 public class MainActivity extends AppCompatActivity {
 
     final int REQUEST_IMAGE_CAPTURE = 1;
     private ImageView imageView;
     Bitmap bitmap;
+    String password;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        focusChange();
 
         imageView = findViewById(R.id.image);
         if( bitmap != null)
@@ -90,13 +107,53 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-/*
-    public void focusChange(View.OnFocusChangeListener f) {
-        Intent changeFocusIntent = new Intent();
 
 
+
+    //trying to figure out password check
+
+    //last other thing added was line in editPassword for calling this function upon change in
+    // focus...unsure how this all works tg...
+
+
+
+    public void passwordCheck() {
+        EditText verify = findViewById(R.id.passCheckEdit);
+        if (password == verify.toString()) {
+            //destroy the dialog
+        }
+        else return;
     }
-*/
+
+
+    void showDialog() {
+        DialogFragment passCheck = new DialogFragment();
+        //somehow siphon from xml for dialog
+        passCheck.show(getFragmentManager(), "dialog");
+    }
+
+
+    public void focusChange() {
+
+        final EditText pass1 = findViewById(R.id.editPassword);
+
+        pass1.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                if(!hasFocus) {
+                    EditText t = findViewById(R.id.editPassword);
+                    password = t.toString();
+                    showDialog();
+                }
+            }
+        });
+    }
+
+
+
+
+
 
 
 

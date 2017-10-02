@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+<!-- Created by Chris Moorad on 9/26/17 -->
+
 <LinearLayout xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -14,7 +17,7 @@
         android:layout_height="35dp"
         android:text="Clear"
         android:layout_gravity="right"
-        android:onClick="clearButtonClicked"/>
+        android:onClick="clearLoadButtonClicked"/>
 
     <TextView
         android:id="@+id/handle"
@@ -81,7 +84,6 @@
         android:textSize="20dp"
         android:layout_marginLeft="5dp"
         android:layout_marginBottom="10dp"/>
-        <!--android:onFocusChanged="focusChange" -->
 
    <ImageButton
        android:id="@+id/image"
@@ -96,6 +98,7 @@
         android:layout_width="84dp"
         android:layout_height="35dp"
         android:layout_gravity="center"
-        android:text="Save" />
+        android:text="Save"
+        android:onClick="saveData"/>
 
 </LinearLayout>

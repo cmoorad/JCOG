@@ -1,8 +1,26 @@
 package com.example.ucla201.first_project;
 
+
+
+/*
+
+Christopher Moorad and Jack Taylor
+CS 65; 17F
+Lab 1
+Group: JCOG
+
+ */
+
+
+
+//Many of these imports are unnecessary, but I call them so I can retrace my steps
+// (where example code came from) for future assignments
+
+import android.content.SharedPreferences;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-
+import android.widget.Button;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -36,6 +54,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Set;
 
 import static android.provider.AlarmClock.EXTRA_MESSAGE;
 
@@ -45,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
     private ImageView imageView;
     Bitmap bitmap;
     String password;
+    boolean existingAccount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,18 +73,59 @@ public class MainActivity extends AppCompatActivity {
         focusChange();
 
         imageView = findViewById(R.id.image);
-        if( bitmap != null)
-            imageView.setImageBitmap(bitmap);
+        if (bitmap != null) imageView.setImageBitmap(bitmap);
+
+
+
+
+        Button load = findViewById(R.id.button);
+
+        SharedPreferences preferences;
+        preferences = getSharedPreferences("text", 0);
+
+        //New attempt at setting Load button using boolean to check for existing data
+        String value = preferences.getString("y1",null);
+
+        if (value == "") {
+            existingAccount = false;
+        } else {
+            load.setText("Load");
+            existingAccount = true;
+        }
+
+
+
+        //First attempt at setting Load button
+        /*
+        if (!getPreferences(MODE_PRIVATE).getString("y1","").equals("")) {
+            load = findViewById(R.id.button);
+            load.setText("Load");
+            existingAccount = false;
+        }
+        else {
+
+            SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString("y1", "");
+            editor.apply();
+
+            existingAccount = true;
+
+        }
+        */
+
+
     }
 
+
+
+    //THIS AND NEXT FOUR ARE CAMERA FUNCTIONS
     public void camButtonClicked(View v){
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
             startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
         }
     }
-
-
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -72,15 +133,12 @@ public class MainActivity extends AppCompatActivity {
         Log.d("STATE", "onSaveState");
         outState.putParcelable("IMG", bitmap);
     }
-
-
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
         Log.d("STATE", "onRestoreState");
         bitmap = savedInstanceState.getParcelable("IMG");
         imageView.setImageBitmap(bitmap);
     }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
@@ -90,49 +148,71 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    //CLEAR BUTTON
-    public void clearButtonClicked(View v){
-        EditText x = findViewById(R.id.editHandle);
-        String y = x.toString();
-        if (y != "") x.setText("", TextView.BufferType.EDITABLE);
-
-        EditText x2 = findViewById(R.id.editName);
-        String y2 = x2.toString();
-        if (y2 != "") x2.setText("", TextView.BufferType.EDITABLE);
-
-        EditText x3 = findViewById(R.id.editPassword);
-        String y3 = x3.toString();
-        if (y3 != "") x3.setText("", TextView.BufferType.EDITABLE);
-
-    }
 
 
 
 
+    //CLEAR simultaneously LOAD BUTTON
+    public void clearLoadButtonClicked(View v){
 
-    //trying to figure out password check
-
-    //last other thing added was line in editPassword for calling this function upon change in
-    // focus...unsure how this all works tg...
-
+        Button clearLoad = findViewById(R.id.button);
 
 
-    public void passwordCheck() {
-        EditText verify = findViewById(R.id.passCheckEdit);
-        if (password == verify.toString()) {
-            //destroy the dialog
+        //From first attempt...
+        //if !clearLoad.getText().equals("Load")
+
+
+        //If there is no data to load, it is a clear button
+        if (!existingAccount) {
+
+            EditText x = findViewById(R.id.editHandle);
+            String y = x.toString();
+            if (!y.equals("")) x.setText("", TextView.BufferType.EDITABLE);
+            EditText x2 = findViewById(R.id.editName);
+            String y2 = x2.toString();
+            if (!y2.equals("")) x2.setText("", TextView.BufferType.EDITABLE);
+
+            EditText x3 = findViewById(R.id.editPassword);
+            String y3 = x3.toString();
+            if (!y3.equals("")) x3.setText("", TextView.BufferType.EDITABLE);
         }
-        else return;
+
+        //if there is data to load, it's the load button
+        else {
+            SharedPreferences sp;
+            sp = this.getPreferences(MODE_PRIVATE);
+
+            String y1 = sp.getString("y1", "");
+            EditText x1 = findViewById(R.id.editHandle);
+            x1.setText(y1, TextView.BufferType.EDITABLE);
+
+            String y2 = sp.getString("y2", "");
+            EditText x2 = findViewById(R.id.editName);
+            x2.setText(y2, TextView.BufferType.EDITABLE);
+
+            String y3 = sp.getString("y3", "");
+            EditText x3 = findViewById(R.id.editPassword);
+            x3.setText(y3, TextView.BufferType.EDITABLE);
+
+            clearLoad.setText("Clear");
+        }
+
     }
 
 
+
+
+
+    //calls the dialog fragment instance to be shown
     void showDialog() {
-        DialogFragment passCheck = new DialogFragment();
-        //somehow siphon from xml for dialog
-        passCheck.show(getFragmentManager(), "dialog");
+        FragmentManager fm = getSupportFragmentManager();
+        PassCheck passCheck = new PassCheck();
+        passCheck.show(fm, "dialog_box");
+        passCheck.p = password;
     }
 
 
+    //CALLS PASSWORD-CHECK DIALOG to show (above) - called in onCreate to instantiate listener
     public void focusChange() {
 
         final EditText pass1 = findViewById(R.id.editPassword);
@@ -145,6 +225,7 @@ public class MainActivity extends AppCompatActivity {
                     EditText t = findViewById(R.id.editPassword);
                     password = t.toString();
                     showDialog();
+
                 }
             }
         });
@@ -152,14 +233,27 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+//called on Save Click
+    public void saveData(View v) {
 
+        SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
 
+        EditText x = findViewById(R.id.editHandle);
+        String y1 = x.toString();
 
+        EditText x2 = findViewById(R.id.editName);
+        String y2 = x2.toString();
 
+        EditText x3 = findViewById(R.id.editPassword);
+        String y3 = x3.toString();
 
+        editor.putString("y1", y1);
+        editor.putString("y2", y2);
+        editor.putString("y3", y3);
+        editor.apply();
 
-
-
+    }
 
 
 }
